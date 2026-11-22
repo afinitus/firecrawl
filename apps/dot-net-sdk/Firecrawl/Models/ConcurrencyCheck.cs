@@ -7,9 +7,9 @@ namespace Firecrawl.Models;
 /// </summary>
 public class ConcurrencyCheck
 {
-    [JsonPropertyName("current")]
+    [JsonPropertyName("concurrency")]
     public int Current { get; set; }
 
-    [JsonPropertyName("max")]
+    [JsonPropertyName("maxConcurrency")]
     public int MaxConcurrency { get; set; }
 }

@@ -401,6 +401,17 @@ public class ModelsTests
     }
 
     [Fact]
+    public void ConcurrencyCheck_DeserializesCorrectly()
+    {
+        var json = """{"success":true,"concurrency":3,"maxConcurrency":50}""";
+
+        var check = JsonSerializer.Deserialize<ConcurrencyCheck>(json, JsonOptions);
+        Assert.NotNull(check);
+        Assert.Equal(3, check.Current);
+        Assert.Equal(50, check.MaxConcurrency);
+    }
+
+    [Fact]
     public void CrawlJob_DeserializesCorrectly()
     {
         var json = """
