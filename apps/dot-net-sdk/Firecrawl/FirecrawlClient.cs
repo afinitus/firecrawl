@@ -795,8 +795,10 @@ public class FirecrawlClient
     public async Task<CreditUsage> GetCreditUsageAsync(
         CancellationToken cancellationToken = default)
     {
-        return await _http.GetAsync<CreditUsage>(
+        var response = await _http.GetAsync<ApiResponse<CreditUsage>>(
             "/v2/team/credit-usage", cancellationToken);
+
+        return response.Data ?? throw new FirecrawlException("Credit usage response contained no data");
     }
 
     // ================================================================

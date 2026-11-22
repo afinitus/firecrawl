@@ -430,6 +430,29 @@ public class ModelsTests
     }
 
     [Fact]
+    public void CreditUsage_DeserializesFromDataEnvelope()
+    {
+        var json = """
+        {
+            "success": true,
+            "data": {
+                "remainingCredits": 73,
+                "planCredits": 100,
+                "billingPeriodStart": "2026-11-01T00:00:00.000Z",
+                "billingPeriodEnd": null
+            }
+        }
+        """;
+
+        var usage = JsonSerializer.Deserialize<ApiResponse<CreditUsage>>(json, JsonOptions)?.Data;
+        Assert.NotNull(usage);
+        Assert.Equal(73, usage.RemainingCredits);
+        Assert.Equal(100, usage.PlanCredits);
+        Assert.Equal("2026-11-01T00:00:00.000Z", usage.BillingPeriodStart);
+        Assert.Null(usage.BillingPeriodEnd);
+    }
+
+    [Fact]
     public void PdfParser_SerializesPageMarkers()
     {
         var parser = new PdfParser
