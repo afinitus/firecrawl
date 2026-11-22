@@ -7,15 +7,18 @@ namespace Firecrawl.Models;
 /// </summary>
 public class CreditUsage
 {
-    [JsonPropertyName("remaining_credits")]
+    [JsonPropertyName("remainingCredits")]
     public int? RemainingCredits { get; set; }
+
+    [JsonPropertyName("planCredits")]
+    public int? PlanCredits { get; set; }
 
     [JsonPropertyName("total_credits_used")]
     public int? TotalCreditsUsed { get; set; }
 
-    [JsonPropertyName("billing_period_start")]
+    [JsonPropertyName("billingPeriodStart")]
     public string? BillingPeriodStart { get; set; }
 
-    [JsonPropertyName("billing_period_end")]
+    [JsonPropertyName("billingPeriodEnd")]
     public string? BillingPeriodEnd { get; set; }
 }
