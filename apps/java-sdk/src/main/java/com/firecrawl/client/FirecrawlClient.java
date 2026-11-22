@@ -979,7 +979,7 @@ public class FirecrawlClient {
      * Gets current credit usage.
      */
     public CreditUsage getCreditUsage() {
-        return http.get("/v2/team/credit-usage", CreditUsage.class);
+        return extractData(http.get("/v2/team/credit-usage", Map.class), CreditUsage.class);
     }
 
     // ================================================================
