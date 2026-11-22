@@ -1699,6 +1699,16 @@ class ClientTest < Minitest::Test
     assert_equal true, h["redactPII"]
   end
 
+  def test_parse_options_sends_json_options_as_json_format
+    json_options = { "prompt" => "Extract the title" }
+    json_format = json_options.merge("type" => "json")
+
+    h = Firecrawl::Models::ParseOptions.new(formats: ["markdown", "json"], json_options: json_options).to_h
+    assert_equal ["markdown", json_format], h["formats"]
+    refute h.key?("jsonOptions")
+    assert_equal [json_format], Firecrawl::Models::ParseOptions.new(json_options: json_options).to_h["formats"]
+  end
+
   def test_parse_options_rejects_unsupported_format
     assert_raises(ArgumentError) do
       Firecrawl::Models::ParseOptions.new(formats: ["screenshot"])

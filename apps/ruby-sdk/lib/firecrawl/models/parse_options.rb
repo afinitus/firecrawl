@@ -35,7 +35,7 @@ module Firecrawl
 
       def to_h
         {
-          "formats" => formats&.map { |fmt| format_value(fmt) },
+          "formats" => serialize_formats,
           "headers" => headers,
           "includeTags" => include_tags,
           "excludeTags" => exclude_tags,
@@ -49,12 +49,23 @@ module Firecrawl
           "integration" => integration,
           "redactPII" => redact_pii,
           "checkPromptInjection" => check_prompt_injection,
-          "jsonOptions" => json_options.is_a?(Hash) ? json_options : json_options&.to_h,
           "auditMetadata" => audit_metadata&.to_h,
         }.compact
       end
 
       private
+
+      # /v2/parse rejects a top-level jsonOptions key, so json_options travels as
+      # the json format object. It replaces a listed json format, or is appended.
+      def serialize_formats
+        items = formats&.map { |fmt| format_value(fmt) }
+        return items if json_options.nil?
+
+        items ||= []
+        index = items.index { |item| extract_format_type(item) == "json" }
+        items[index || items.size] = json_options.to_h.merge("type" => "json")
+        items
+      end
 
       def validate!
         if !timeout.nil? && timeout.to_i <= 0
