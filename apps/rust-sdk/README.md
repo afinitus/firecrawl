@@ -30,12 +30,12 @@ async fn main() {
 
 ### Scraping a URL
 
-To scrape a single URL, use the `scrape_url` method. It takes the URL as a parameter and returns the scraped data as a `Document`.
+To scrape a single URL, use the `scrape` method. It takes the URL as a parameter and returns the scraped data as a `Document`.
 
 ```rust
-let scrape_result = app.scrape_url("https://firecrawl.dev", None).await;
+let scrape_result = client.scrape("https://firecrawl.dev", None).await;
 match scrape_result {
-    Ok(data) => println!("Scrape result:\n{}", data.markdown),
+    Ok(data) => println!("Scrape result:\n{}", data.markdown.unwrap_or_default()),
     Err(e) => eprintln!("Scrape failed: {}", e),
 }
 ```
@@ -183,7 +183,7 @@ match llm_extraction_result {
 
 ### Crawling a Website
 
-To crawl a website, use the `crawl_url` method. This will wait for the crawl to complete, which may take a long time based on your starting URL and your options.
+To crawl a website, use the `crawl` method. This will wait for the crawl to complete, which may take a long time based on your starting URL and your options.
 
 ```rust
 let crawl_options = CrawlOptions {
@@ -191,28 +191,28 @@ let crawl_options = CrawlOptions {
     ..Default::default()
 };
 
-let crawl_result = app
-    .crawl_url("https://firecrawl.dev", crawl_options)
+let crawl_result = client
+    .crawl("https://firecrawl.dev", crawl_options)
     .await;
 
 match crawl_result {
-    Ok(data) => println!("Crawl Result (used {} credits):\n{:#?}", data.credits_used, data.data),
+    Ok(data) => println!("Crawl Result (used {:?} credits):\n{:#?}", data.credits_used, data.data),
     Err(e) => eprintln!("Crawl failed: {}", e),
 }
 ```
 
 #### Crawling asynchronously
 
-To crawl without waiting for the result, use the `crawl_url_async` method. It takes the same parameters, but it returns a `CrawlAsyncRespone` struct, containing the crawl's ID. You can use that ID with the `check_crawl_status` method to check the status at any time. Do note that completed crawls are deleted after 24 hours.
+To crawl without waiting for the result, use the `start_crawl` method. It takes the same parameters, but it returns a `CrawlResponse` struct, containing the crawl's ID. You can use that ID with the `get_crawl_status` method to check the status at any time. Do note that completed crawls are deleted after 24 hours.
 
 ```rust
-let crawl_id = app.crawl_url_async("https://firecrawl.dev", None).await?.id;
+let crawl_id = client.start_crawl("https://firecrawl.dev", None).await?.id;
 
 // ... later ...
 
-let status = app.check_crawl_status(crawl_id).await?;
+let status = client.get_crawl_status(crawl_id).await?;
 
-if status.status == CrawlStatusTypes::Completed {
+if status.status == JobStatus::Completed {
     println!("Crawl is done: {:#?}", status.data);
 } else {
     // ... wait some more ...
@@ -224,8 +224,8 @@ if status.status == CrawlStatusTypes::Completed {
 Map all associated links from a starting URL.
 
 ```rust
-let map_result = app
-    .map_url("https://firecrawl.dev", None)
+let map_result = client
+    .map("https://firecrawl.dev", None)
     .await;
 
 match map_result {
@@ -297,7 +297,7 @@ To ensure the functionality of the Firecrawl Rust SDK, we have included end-to-e
 To run the tests, execute the following commands:
 ```bash
 $ export $(xargs < ./tests/.env)
-$ cargo test --test e2e_with_auth
+$ cargo test --test v2_e2e -- --ignored
 ```
 
 ## Contributing
